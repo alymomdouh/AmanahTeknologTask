@@ -1,4 +1,5 @@
 ﻿using AmanahTeknologTask.Domains;
+using AmanahTeknologTask.Domains.Models;
 using AmanahTeknologTask.Repositories;
 
 namespace AmanahTeknologTask.Unit_Of_Work
@@ -7,10 +8,16 @@ namespace AmanahTeknologTask.Unit_Of_Work
     {
         private readonly DataContext context;
         public IProductRepository ProductRepository { get; }
+        public IInvoiceRepository InvoiceRepository { get; }
+        public ITaxRepository TaxRepository { get; }
+        public IPayWayRepository<Payway> PayWayRepository { get; }
         public UnitOfWork(DataContext context)
         {
             this.context = context;
-            ProductRepository = new ProductRepository(this.context); 
+            ProductRepository = new ProductRepository(this.context);
+            InvoiceRepository = new InvoiceRepository(this.context);
+            TaxRepository = new TaxRepository(this.context);
+            PayWayRepository = new PayWayRepository(this.context);
         }
         public void Dispose()
         {

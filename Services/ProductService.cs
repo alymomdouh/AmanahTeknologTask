@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace AmanahTeknologTask.Services
 {
-    public class ProductService: IProductService
+    public class ProductService : IProductService
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
@@ -27,7 +27,7 @@ namespace AmanahTeknologTask.Services
             }
             return mapper.Map<List<ListProduct>>(data);
         }
-            public int Insert(AddProduct T)
+        public int Insert(AddProduct T)
         {
             var product = mapper.Map<Product>(T);
             unitOfWork.ProductRepository.Insert(product);

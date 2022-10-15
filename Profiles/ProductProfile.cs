@@ -4,11 +4,12 @@ using AutoMapper;
 
 namespace AmanahTeknologTask.Profiles
 {
-    public class ProductProfile : Profile
+    public class ProductProfile : Profile  
     {
         public ProductProfile()
         {
             CreateMap<AddProduct, Product>();
+            CreateMap<Product, ListProduct>();
         }
     }
 }

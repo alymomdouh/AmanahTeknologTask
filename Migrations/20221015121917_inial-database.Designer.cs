@@ -4,14 +4,16 @@ using AmanahTeknologTask.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AmanahTeknologTask.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20221015121917_inial-database")]
+    partial class inialdatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,6 +38,10 @@ namespace AmanahTeknologTask.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyClientId");
+
+                    b.HasIndex("IndividualClientId");
 
                     b.ToTable("BankInformation");
                 });
@@ -66,6 +72,10 @@ namespace AmanahTeknologTask.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyClientId");
+
+                    b.HasIndex("IndividualClientId");
 
                     b.ToTable("CardInformation");
                 });
@@ -135,13 +145,13 @@ namespace AmanahTeknologTask.Migrations
                     b.Property<int?>("IndividualClientId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PaywayId")
+                    b.Property<int?>("PaywayId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TaxId")
+                    b.Property<int>("TaxId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Totalprice")
@@ -172,16 +182,10 @@ namespace AmanahTeknologTask.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BankInformationId")
+                    b.Property<int>("BankInformationId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CardInformationId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CompanyClientId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IndividualClientId")
+                    b.Property<int>("CardInformationId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("date")
@@ -192,10 +196,6 @@ namespace AmanahTeknologTask.Migrations
                     b.HasIndex("BankInformationId");
 
                     b.HasIndex("CardInformationId");
-
-                    b.HasIndex("CompanyClientId");
-
-                    b.HasIndex("IndividualClientId");
 
                     b.ToTable("Payway");
                 });
@@ -282,6 +282,36 @@ namespace AmanahTeknologTask.Migrations
                         });
                 });
 
+            modelBuilder.Entity("AmanahTeknologTask.Domains.Models.BankInformation", b =>
+                {
+                    b.HasOne("AmanahTeknologTask.Domains.Models.CompanyClient", "CompanyClient")
+                        .WithMany("BankInformation")
+                        .HasForeignKey("CompanyClientId");
+
+                    b.HasOne("AmanahTeknologTask.Domains.Models.IndividualClient", "IndividualClient")
+                        .WithMany("BankInformation")
+                        .HasForeignKey("IndividualClientId");
+
+                    b.Navigation("CompanyClient");
+
+                    b.Navigation("IndividualClient");
+                });
+
+            modelBuilder.Entity("AmanahTeknologTask.Domains.Models.CardInformation", b =>
+                {
+                    b.HasOne("AmanahTeknologTask.Domains.Models.CompanyClient", "CompanyClient")
+                        .WithMany("CardInformation")
+                        .HasForeignKey("CompanyClientId");
+
+                    b.HasOne("AmanahTeknologTask.Domains.Models.IndividualClient", "IndividualClient")
+                        .WithMany("CardInformation")
+                        .HasForeignKey("IndividualClientId");
+
+                    b.Navigation("CompanyClient");
+
+                    b.Navigation("IndividualClient");
+                });
+
             modelBuilder.Entity("AmanahTeknologTask.Domains.Models.Invoice", b =>
                 {
                     b.HasOne("AmanahTeknologTask.Domains.Models.CompanyClient", "CompanyClient")
@@ -294,9 +324,7 @@ namespace AmanahTeknologTask.Migrations
 
                     b.HasOne("AmanahTeknologTask.Domains.Models.Payway", "Payway")
                         .WithMany()
-                        .HasForeignKey("PaywayId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PaywayId");
 
                     b.HasOne("AmanahTeknologTask.Domains.Models.Product", "product")
                         .WithMany()
@@ -306,7 +334,9 @@ namespace AmanahTeknologTask.Migrations
 
                     b.HasOne("AmanahTeknologTask.Domains.Models.Tax", "Tax")
                         .WithMany()
-                        .HasForeignKey("TaxId");
+                        .HasForeignKey("TaxId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CompanyClient");
 
@@ -323,19 +353,15 @@ namespace AmanahTeknologTask.Migrations
                 {
                     b.HasOne("AmanahTeknologTask.Domains.Models.BankInformation", "BankInformation")
                         .WithMany()
-                        .HasForeignKey("BankInformationId");
+                        .HasForeignKey("BankInformationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AmanahTeknologTask.Domains.Models.CardInformation", "CardInformation")
                         .WithMany()
-                        .HasForeignKey("CardInformationId");
-
-                    b.HasOne("AmanahTeknologTask.Domains.Models.CompanyClient", null)
-                        .WithMany("Payway")
-                        .HasForeignKey("CompanyClientId");
-
-                    b.HasOne("AmanahTeknologTask.Domains.Models.IndividualClient", null)
-                        .WithMany("Payway")
-                        .HasForeignKey("IndividualClientId");
+                        .HasForeignKey("CardInformationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("BankInformation");
 
@@ -344,12 +370,16 @@ namespace AmanahTeknologTask.Migrations
 
             modelBuilder.Entity("AmanahTeknologTask.Domains.Models.CompanyClient", b =>
                 {
-                    b.Navigation("Payway");
+                    b.Navigation("BankInformation");
+
+                    b.Navigation("CardInformation");
                 });
 
             modelBuilder.Entity("AmanahTeknologTask.Domains.Models.IndividualClient", b =>
                 {
-                    b.Navigation("Payway");
+                    b.Navigation("BankInformation");
+
+                    b.Navigation("CardInformation");
                 });
 #pragma warning restore 612, 618
         }

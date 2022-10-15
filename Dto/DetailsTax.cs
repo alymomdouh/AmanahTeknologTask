@@ -1,9 +1,9 @@
 ﻿namespace AmanahTeknologTask.Dto
 {
-    public class ListProduct
+    public class DetailsTax
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int Price { get; set; }
+        public decimal Value { get; set; }
     }
 }

@@ -30,24 +30,40 @@ namespace AmanahTeknologTask
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<DataContext>
+             (options =>
+             {
+                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+             });
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyOrigin()
+                    .AllowAnyMethod().AllowAnyHeader();
+                });
+            });
             services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllers();
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AmanahTeknologTask", Version = "v1" });
             });
-            services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddCors(o =>
-            {
-                o.AddDefaultPolicy(builder=>builder.AllowAnyMethod()
-                .AllowAnyHeader().SetIsOriginAllowed((host)=>true).AllowCredentials());
-            });
-            services.AddDbContext<DataContext>
-              (options =>
-              {
-                  options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-              });
+           
+            //services.AddCors(o =>
+            //{
+            //    o.AddDefaultPolicy(builder=>builder.AllowAnyMethod()
+            //    .AllowAnyHeader().SetIsOriginAllowed((host)=>true).AllowCredentials());
+            //});
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,13 +75,13 @@ namespace AmanahTeknologTask
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AmanahTeknologTask v1"));
             }
-
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
+            app.UseHttpsRedirection();  
             app.UseAuthorization();
-
+            //app.UseCors(options => options.AllowAnyOrigin());
+            app.UseCors(options => options.WithOrigins("http://localhost:4200")//should like this, without any / in the last.
+            .AllowAnyMethod() //to allow methods get post put .....
+            .AllowAnyHeader());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

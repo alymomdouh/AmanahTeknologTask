@@ -17,40 +17,17 @@ namespace AmanahTeknologTask.Controllers
         {
             this.service = service;
         }
+        [HttpGet("GetAll")]
         public IActionResult GetAll()
         {
-            return Ok(service.GetList());
+            var result = service.GetList();
+            return Ok(result);
         }
         // GET: api/<ProductController>
         [HttpPost]
-        public  ActionResult Add([FromBody]AddProduct product)
+        public ActionResult Add([FromBody] AddProduct product)
         {
             return Ok(service.Insert(product));
-        }
-
-        // GET api/<ProductController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<ProductController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<ProductController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<ProductController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

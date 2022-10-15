@@ -36,6 +36,20 @@ namespace AmanahTeknologTask.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Price = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Taxes",
                 columns: table => new
                 {
@@ -84,8 +98,8 @@ namespace AmanahTeknologTask.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CardNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CCV = table.Column<int>(type: "int", nullable: false),
-                    expireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CVC = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    expireDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IndividualClientId = table.Column<int>(type: "int", nullable: true),
                     CompanyClientId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -142,6 +156,7 @@ namespace AmanahTeknologTask.Migrations
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Totalprice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TaxId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     IndividualClientId = table.Column<int>(type: "int", nullable: true),
                     CompanyClientId = table.Column<int>(type: "int", nullable: true),
                     PaywayId = table.Column<int>(type: "int", nullable: true)
@@ -168,6 +183,12 @@ namespace AmanahTeknologTask.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Invoices_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Invoices_Taxes_TaxId",
                         column: x => x.TaxId,
                         principalTable: "Taxes",
@@ -175,26 +196,33 @@ namespace AmanahTeknologTask.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Products",
-                columns: table => new
+            migrationBuilder.InsertData(
+                table: "CompanyClients",
+                columns: new[] { "Id", "Email", "Name" },
+                values: new object[] { 1, "CompanyClient1@gmail.com", "CompanyClient1" });
+
+            migrationBuilder.InsertData(
+                table: "IndividualClients",
+                columns: new[] { "Id", "Email", "Name" },
+                values: new object[] { 1, "IndividualClient1@gmail.com", "IndividualClient1" });
+
+            migrationBuilder.InsertData(
+                table: "Products",
+                columns: new[] { "Id", "Name", "Price" },
+                values: new object[,]
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Price = table.Column<int>(type: "int", nullable: false),
-                    InvoiceId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Products", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Products_Invoices_InvoiceId",
-                        column: x => x.InvoiceId,
-                        principalTable: "Invoices",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                    { 1, "Product1", 10 },
+                    { 2, "Product2", 20 },
+                    { 3, "Product3", 30 },
+                    { 4, "Product4", 40 },
+                    { 5, "Product5", 50 },
+                    { 6, "Product6", 60 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Taxes",
+                columns: new[] { "Id", "Name", "Value" },
+                values: new object[] { 1, "John Doe", 30m });
 
             migrationBuilder.CreateIndex(
                 name: "IX_BankInformation_CompanyClientId",
@@ -232,6 +260,11 @@ namespace AmanahTeknologTask.Migrations
                 column: "PaywayId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Invoices_ProductId",
+                table: "Invoices",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Invoices_TaxId",
                 table: "Invoices",
                 column: "TaxId");
@@ -245,23 +278,18 @@ namespace AmanahTeknologTask.Migrations
                 name: "IX_Payway_CardInformationId",
                 table: "Payway",
                 column: "CardInformationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_InvoiceId",
-                table: "Products",
-                column: "InvoiceId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Products");
-
-            migrationBuilder.DropTable(
                 name: "Invoices");
 
             migrationBuilder.DropTable(
                 name: "Payway");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Taxes");
